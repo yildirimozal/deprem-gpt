@@ -53,7 +53,6 @@ def toplamlar(a, c, p, idx):
     """Her hedef için S_i, I_i, Δ_i (K ve mu hariç)."""
     S, I, D = [], [], []
     q = 1.0 - p
-    cq = c ** q
     for s in range(0, len(idx), arg.parca):
         i = idx[s:s + arg.parca]
         jmax = int(i[-1])

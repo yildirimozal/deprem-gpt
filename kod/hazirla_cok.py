@@ -5,7 +5,6 @@
 Kurallar ON_KAYIT_2.md'de. Büyüklük katalog eşiğine göre göreli (M − Mc), 0.1'e yuvarlı.
 """
 import glob
-import io
 import json
 import sys
 import zipfile

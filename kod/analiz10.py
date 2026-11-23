@@ -1,4 +1,4 @@
-"""Konum çıktısı (ON_KAYIT_10.md): sonuclar/c10_ozet.json, c10_tablolar.md, sekiller/c10_sekil1.
+"""Konum çıktısı (ON_KAYIT_10.md): sonuclar/c10_ozet.json, c10_tablolar.md (harita şekli harita_ciz.py ile üretilir).
 
 Birincil: model S (ön kayıtlı) − uzaysal ETAS, olay başına SLL (km²). Keşif (ön kayıt dışı): S2 (işaretçi
 başlık, 12 000 adım) ve S_uzun (S, 12 000 adım, tek tohum).
@@ -9,11 +9,7 @@ import json
 import math
 from pathlib import Path
 
-import matplotlib
 import numpy as np
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
 
 KOK = Path(__file__).resolve().parent.parent
 rng = np.random.default_rng(0)

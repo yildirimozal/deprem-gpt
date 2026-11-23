@@ -123,7 +123,7 @@ for te, r in ozet["ana_sok_sonrasi"].items():
     sat.append("")
 sat += ["%5–95 aralığının gözlenen sayıyı kapsama oranı (ana şok sonrası 25 yayın): " + ", ".join(
     f"{te} model {r['model_kapsama']:.2f}, ETAS {r['etas_kapsama']:.2f}" for te, r in ozet["ana_sok_sonrasi"].items()), ""]
-sat += [f"Taşan model senaryosu (adım sınırına ulaşan): " + ", ".join(f"{te}: {ozet['kalibrasyon'][f'{te}|tasan_model_senaryo']}" for te in TEST),
+sat += ["Taşan model senaryosu (adım sınırına ulaşan): " + ", ".join(f"{te}: {ozet['kalibrasyon'][f'{te}|tasan_model_senaryo']}" for te in TEST),
         "", f"**Karar (ön kayıtlı kural): {karar}** (GA'sı sıfırın üstünde hedef: {iyi}/4, tamamen altında: {kotu_tam}/4)",
         "Yıl ortalamasında model öngörülen/gözlenen oranı: " + ", ".join(f"{k} {x['oran']:.2f}" + (" (KALİBRE DEĞİL)" if x["kalibre_degil"] else "") for k, x in kalibre.items())]
 open(KOK / "sonuclar/c9_tablolar.md", "w").write("\n".join(sat) + "\n")

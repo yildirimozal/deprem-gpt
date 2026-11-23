@@ -120,7 +120,7 @@ for a_, c_ in [("J1", "J0"), ("J2", "J0"), ("J1", "J2")]:
     sat.append(f"| {a_} − {c_} | " + " | ".join(
         f"{ozet['kiyas'][f'{a_}-{c_}|{a}']['ort']:+.3f} {ga(ozet['kiyas'][f'{a_}-{c_}|{a}']['GA'])}" for a in ADLAR) + " |")
 sat += ["", "Tohumlar (tüm test): " + "; ".join(f"{k}: " + ", ".join(f"{x:.4f}" for x in ozet['model'][k]['tohum_test']) for k in KOD),
-        f"J1 − J0 tohum eşleşik (tüm test): " + ", ".join(f"{x:+.3f}" for x in r_10["tohum"]),
+        "J1 − J0 tohum eşleşik (tüm test): " + ", ".join(f"{x:+.3f}" for x in r_10["tohum"]),
         f"J1 − {en_guclu} tohumlar (tüm test): " + ", ".join(f"{x:+.3f}" for x in r_yil["tohum"]),
         f"J1 − {en_guclu} tohumlar (Noto ilk gün): " + ", ".join(f"{x:+.3f}" for x in r_gun["tohum"]), "",
         f"**Karar (ön kayıtlı kural): {karar}**"]
