@@ -59,6 +59,12 @@ Bulletin.
 
 ## Running
 
+Install the Python dependencies (Python 3.11+):
+
+```bash
+pip install -r requirements.txt
+```
+
 Data preparation and analysis run on a CPU (`python3 kod/<script>.py` from the repository root). Training and
 the ETAS fits use PyTorch on a CUDA GPU. The work was done on NVIDIA H100 GPUs (PyTorch 2.6, Python 3.11).
 Dense ETAS likelihoods for the largest catalogs need a large-memory GPU. Example calls:
