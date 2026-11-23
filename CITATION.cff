@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software or the pre-registered result summaries, please cite it as below."
+title: "Deprem GPT: code, pre-registrations and results for a transformer point process trained on several earthquake catalogs"
+type: software
+authors:
+  - family-names: "Yıldırım"
+    given-names: "Özal"
+    affiliation: "Fırat University"
+license: MIT
+repository-code: "https://github.com/yildirimozal/deprem-gpt"
+keywords:
+  - earthquake forecasting
+  - ETAS
+  - transformer
+  - temporal point process
+  - aftershocks
+  - pre-registration
