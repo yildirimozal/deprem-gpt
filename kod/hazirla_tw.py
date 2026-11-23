@@ -99,6 +99,7 @@ ozet["ek_tw"] = {a: int(s2 - s1) for a, s1, s2 in zip(sa, sb, ss)}
 kn = dict(np.load(V / "konum.npz"))
 kn.update(Tayvan_TAP_t=t, Tayvan_TAP_enlem=d.enlem.values.astype(float), Tayvan_TAP_boylam=d.boylam.values.astype(float))
 np.savez(V / "konum.npz", **kn)
-json.dump(ozet, open(KOK / "sonuclar/tw_veri_ozeti.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/tw_veri_ozeti.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 print(json.dumps({k: v for k, v in ozet.items() if k != "mc_yillik_maxc"}, indent=1, ensure_ascii=False))
 print("yıllık MAXC+0.2:", ozet["mc_yillik_maxc"])

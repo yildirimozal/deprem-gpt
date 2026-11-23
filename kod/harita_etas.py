@@ -21,13 +21,13 @@ SAAT = 12.0
 rng = np.random.default_rng(10)
 v = np.load(KOK / "veri" / NPZ)
 t, mg, bolum = v["t_gun"], v["buyukluk"] - float(v["mc"]), v["bolum"]
-uj = json.load(open(KOK / f"sonuclar/{UZAY}/etas_uzay.json"))
+uj = json.loads((KOK / f"sonuclar/{UZAY}/etas_uzay.json").read_text(encoding="utf-8"))
 la0, lo0 = uj["merkez"]
 x = (v["boylam"] - lo0) * np.cos(np.radians(la0)) * 111.2
 y = (v["enlem"] - la0) * 111.2
 su = uj["secilen"]
 d_, gam, rho, h = su["d_km2"], su["gamma"], su["rho"], su["h_km"]
-s = json.load(open(KOK / f"sonuclar/{ZAMAN}/etas.json"))["secilen"]
+s = json.loads((KOK / f"sonuclar/{ZAMAN}/etas.json").read_text(encoding="utf-8"))["secilen"]
 a, c, p, K = s["a"], s["c"], s["p"], s["K"]
 tau = s.get("tau")
 mu = s["mu"][0] if isinstance(s["mu"], list) else s["mu"]

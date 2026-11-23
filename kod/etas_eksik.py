@@ -259,8 +259,9 @@ cikti = KOK / "sonuclar" / arg.ad
 cikti.mkdir(parents=True, exist_ok=True)
 np.savez(cikti / "etas_test.npz", idx=te_idx, tll=tll.cpu().numpy(), log_P=LP.cpu().numpy(),
          log_lam=log_lam.cpu().numpy(), Lam=Lam.cpu().numpy(), mu_d_goreli=MD.cpu().numpy())
-json.dump({"arg": vars(arg), "mc": mc, "beta": BETA, "b": BETA / LN10, "n_buyuk_olay": int(len(buyuk)),
-           "n_uydurma": int(len(uy_idx)), "n_test": int(len(te_idx)), "denemeler": sonuc, "secilen": en,
-           "test_tll": float(tll.mean()), "sure_s": time.time() - bas}, open(cikti / "etas.json", "w"), indent=1)
+with open(cikti / "etas.json", "w", encoding="utf-8") as f:
+    json.dump({"arg": vars(arg), "mc": mc, "beta": BETA, "b": BETA / LN10, "n_buyuk_olay": int(len(buyuk)),
+               "n_uydurma": int(len(uy_idx)), "n_test": int(len(te_idx)), "denemeler": sonuc, "secilen": en,
+               "test_tll": float(tll.mean()), "sure_s": time.time() - bas}, f, indent=1)
 print(f"TEST TLL {float(tll.mean()):.4f}  n={len(te_idx)}  dallanma={en['dallanma']:.3f}  G={en['G']:.2f} H={en['H']:.2f}", flush=True)
 print("IS_BITTI", flush=True)

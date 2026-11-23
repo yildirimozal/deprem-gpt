@@ -34,7 +34,7 @@ def boot(f, mk, tt, bg):
 def etas_yukle(ad, test):
     z = np.load(KOK / f"sonuclar/{ad}/etas_test.npz")
     assert np.array_equal(z["idx"], test)
-    return z["tll"], json.load(open(KOK / f"sonuclar/{ad}/etas.json"))
+    return z["tll"], json.loads((KOK / f"sonuclar/{ad}/etas.json").read_text(encoding="utf-8"))
 
 
 # ---------------- Türkiye ----------------
@@ -94,7 +94,8 @@ for m_ad in ["M0", "M1", "M5"]:
             f = ort - etas_c[k]
             ozet["california"]["kiyas"][f"{m_ad}-{k}|{ad}"] = {"ort": float(f[mk].mean()), "GA": boot(f, mk, tt_c, bg),
                                                                "tohum": [float((x - etas_c[k])[mk].mean()) for x in xs]}
-json.dump(ozet, open(KOK / "sonuclar/c4_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c4_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 # ---------------- tablolar ----------------
@@ -129,7 +130,7 @@ for m_ad in ["M1", "M0", "M5"]:
     for k in etas_c:
         q = lambda ad: ozet["california"]["kiyas"][f"{m_ad}-{k}|{ad}"]  # noqa: E731
         sat.append(f"| {m_ad} − {k} | " + " | ".join(f"{q(ad)['ort']:+.3f} {ga(q(ad)['GA'])}" for ad in kume_c) + " |")
-open(KOK / "sonuclar/c4_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c4_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
 
 # ---------------- şekil ----------------

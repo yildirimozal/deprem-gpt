@@ -107,5 +107,6 @@ np.savez(KOK / "veri/ek_tr.npz", t_gun=np.concatenate(tl), m_goreli=np.concatena
          seg_bas=np.array(sb), seg_son=np.array(ss), seg_ad=np.array(sa))
 ozet["ek_tr"] = ek_say
 ozet["ek_tr_toplam"] = int(n)
-json.dump(ozet, open(KOK / "sonuclar/tr_veri_ozeti.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/tr_veri_ozeti.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 print(json.dumps(ozet, indent=1, ensure_ascii=False))

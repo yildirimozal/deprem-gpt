@@ -417,6 +417,7 @@ if arg.konum_cikti:
     kayit["test_sll_km2"] = float(r_[2].mean() - 2 * math.log(1000))
     print(f"TEST SLL (km²) {kayit['test_sll_km2']:.4f}", flush=True)
 np.savez(cikti / "test.npz", idx=test_idx, tll=tt, mll=tm, **ek_)
-json.dump(kayit, open(cikti / "kayit.json", "w"), indent=1)
+with open(cikti / "kayit.json", "w", encoding="utf-8") as f:
+    json.dump(kayit, f, indent=1)
 print(f"TEST TLL {tt.mean():.4f}  MLL {tm.mean():.4f}  (en iyi adım {en_iyi_adim})", flush=True)
 print("IS_BITTI", flush=True)

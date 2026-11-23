@@ -47,7 +47,7 @@ def ayristir(prm):
 
 out = {}
 for k in ["E0", "E1", "E2", "E4", "E5"]:
-    prm = json.load(open(KOK / f"sonuclar/etas4_{k}/etas.json"))["secilen"]
+    prm = json.loads((KOK / f"sonuclar/etas4_{k}/etas.json").read_text(encoding="utf-8"))["secilen"]
     ll, L = ayristir(prm)
     kayitli = np.load(KOK / f"sonuclar/etas4_{k}/etas_test.npz")["tll"]
     fark = float(np.abs(ll - L - kayitli).max())

@@ -44,7 +44,7 @@ for L in LER:
             continue
         z = np.load(d / "test.npz")
         assert np.array_equal(z["idx"], test)
-        kos[(L, s)] = dict(tll=z["tll"], mll=z["mll"], kayit=json.load(open(d / "kayit.json")))
+        kos[(L, s)] = dict(tll=z["tll"], mll=z["mll"], kayit=json.loads((d / "kayit.json").read_text(encoding="utf-8")))
 print("eksik koşular:", eksik)
 
 
@@ -93,7 +93,8 @@ ozet["kosular"] = {f"L{L}_t{s}": {k: kos[(L, s)]["kayit"][k] for k in
                                   ["en_iyi_adim", "en_iyi_dogrulama_tll", "test_tll", "test_mll", "sure_s", "n_param"]}
                    for (L, s) in kos}
 (KOK / "sonuclar").mkdir(exist_ok=True)
-json.dump(ozet, open(KOK / f"sonuclar/{ONEK}ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / f"sonuclar/{ONEK}ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 # ---------- markdown tablo ----------
@@ -122,7 +123,7 @@ for ad in ["tum_test", "yogun_M6_30g", "sakin"]:
     r = ozet["kume"][ad]
     sat.append(f"| {ad} | {r['GR_mll']:.4f} | " + " | ".join(
         "–" if r.get(f"L{L}") is None else f"{r[f'L{L}']['mll_ort']:.4f}" for L in LER) + " |")
-open(KOK / f"sonuclar/{ONEK}tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / f"sonuclar/{ONEK}tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
 
 # ---------- şekiller (dergi stili) ----------

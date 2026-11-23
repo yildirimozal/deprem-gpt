@@ -29,7 +29,7 @@ for k in ["E6", "E7", "E8", "E9", "kapali"]:
     z = np.load(KOK / f"sonuclar/etas6_{k}/etas_test.npz")
     assert np.array_equal(z["idx"], test)
     ETAS[k] = dict(z)
-    ETAS[k]["bilgi"] = json.load(open(KOK / f"sonuclar/etas6_{k}/etas.json"))
+    ETAS[k]["bilgi"] = json.loads((KOK / f"sonuclar/etas6_{k}/etas.json").read_text(encoding="utf-8"))
 for k in ["E1", "E2", "E4", "E5"]:
     ETAS[k] = {"tll": np.load(KOK / f"sonuclar/etas4_{k}/etas_test.npz")["tll"]}
 denetim = float(np.abs(ETAS["kapali"]["tll"] - ETAS["E2"]["tll"]).max())
@@ -122,7 +122,8 @@ mk = (saat > 0) & (saat <= 24)
 ozet["buyukluk"]["ilk_gun"] = {f"T1-GR_{k}": float((mll_T1 - g)[mk].mean()) for k, g in GR.items()}
 ozet["buyukluk"]["ilk_gun"]["GA_1saat_GR_E8"] = boot(mll_T1 - GR["E8"], mk, 1 / 24)
 ozet["buyukluk"]["tum_test"] = {f"T1-GR_{k}": float((mll_T1 - g).mean()) for k, g in GR.items()}
-json.dump(ozet, open(KOK / "sonuclar/c6_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c6_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 def ga(x):
@@ -160,7 +161,7 @@ for et in ET + ["ilk_gun", "tum_test"]:
     x = ozet["buyukluk"][et]
     sat.append(f"| {et} | {x['T1-GR_sabit']:+.3f} | {x['T1-GR_E6']:+.3f} | {x['T1-GR_E7']:+.3f} | {x['T1-GR_E8']:+.3f} |")
 sat.append(f"\nİlk gün T1 − (GR + E8 algılama), 1 saat blok GA: {ga(ozet['buyukluk']['ilk_gun']['GA_1saat_GR_E8'])}")
-open(KOK / "sonuclar/c6_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c6_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
 
 # şekil: ilk 72 saatte birikimli kazanç T1 − ETAS

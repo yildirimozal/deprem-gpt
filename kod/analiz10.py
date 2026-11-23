@@ -35,7 +35,7 @@ for te, c in TEST.items():
     tt = v["t_gun"][test]
     sa = (tt - v["t_gun"][int(v["ana_sok_idx"])])
     kume = {"tum_yil": (np.ones(len(test), bool), 7), "ilk_gun": ((sa > 0) & (sa <= 1), 1 / 24)}
-    ej = json.load(open(KOK / f"sonuclar/{c['etas_s']}/etas_uzay.json"))
+    ej = json.loads((KOK / f"sonuclar/{c['etas_s']}/etas_uzay.json").read_text(encoding="utf-8"))
     es = np.load(KOK / f"sonuclar/{c['etas_s']}/etas_uzay_test.npz")
     assert np.array_equal(es["idx"], test)
     ozet["etas_uzay"][te] = ej["secilen"]
@@ -60,7 +60,7 @@ for te, c in TEST.items():
         z = [np.load(p) for p in dz]
         seriler[kod] = dict(sll=np.mean([q["sll"] - KM2 for q in z], 0), tll=np.mean([q["tll"] for q in z], 0),
                             sll_tohum=[q["sll"] - KM2 for q in z], tll_tohum=[q["tll"] for q in z],
-                            adim=[json.load(open(p.parent / "kayit.json"))["en_iyi_adim"] for p in dz])
+                            adim=[json.loads((p.parent / "kayit.json").read_text(encoding="utf-8"))["en_iyi_adim"] for p in dz])
 
     def boot(f, mk, bg):
         f2, bb = f[mk], np.floor((tt[mk] - tt[0]) / bg).astype(int)
@@ -98,7 +98,8 @@ elif all(q["sll_eksi_etas"] < 0 and q["GA"][1] < 0 for q in y):
 else:
     karar = "KARISIK"
 ozet["karar"] = {"karar": karar, "zaman_bozuluyor_mu": {te: ozet["fark"][f"{te}|S|tum_yil"]["tll_eksi_A0"] < -0.01 for te in TEST}}
-json.dump(ozet, open(KOK / "sonuclar/c10_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c10_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 def ga(q):
@@ -124,5 +125,5 @@ for te in TEST:
                    + f" | {q['sll_eksi_arka_plan']:+.3f} | {q['toplam_eksi_etas']:+.3f} {ga(q['toplam_GA'])} | {q['tll_eksi_A0']:+.4f} |")
     sat.append("")
 sat += [f"**Karar (ön kayıtlı kural, model S): {karar}**; zaman tahmini bozuluyor mu (TLL − A0 < −0.01): {ozet['karar']['zaman_bozuluyor_mu']}"]
-open(KOK / "sonuclar/c10_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c10_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))

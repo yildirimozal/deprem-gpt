@@ -27,7 +27,7 @@ kume = {"tum_test": np.ones(len(test), bool), "yogun_M6_30g": v["yogun_M6_30g"][
         "sakin": ~v["yogun_M6_30g"][test], "El Mayor 2010 M7.2": v["dizi::2010-04-04 M7.2"][test],
         "Ridgecrest 2019 M7.1": v["dizi::2019-07-06 M7.1"][test]}
 kos = {k: [np.load(KOK / f"sonuclar/c2_{k}_t{s}/test.npz")["tll"] for s in (1, 2, 3)] for k in ["M0", "M1", "M2", "M3", "M4", "M5"]}
-out = {"etas_zaman": json.load(open(KOK / "sonuclar/etas_ca_dogrulama/etas.json"))["secilen"], "kume": {}}
+out = {"etas_zaman": json.loads((KOK / "sonuclar/etas_ca_dogrulama/etas.json").read_text(encoding="utf-8"))["secilen"], "kume": {}}
 for ad, mk in kume.items():
     bg = 30 if ad in ("tum_test", "yogun_M6_30g", "sakin") else 1
     r = {"n": int(mk.sum()), "ETAS_EarthquakeNPP": float(eo[mk].mean()), "ETAS_zaman": float(ez[mk].mean()),
@@ -37,7 +37,8 @@ for ad, mk in kume.items():
         r[f"{k}-ETAS_zaman"] = {"ort": float(f[mk].mean()), "GA": boot(f, mk, bg),
                                 "tohum": [float((x - ez)[mk].mean()) for x in xs]}
     out["kume"][ad] = r
-json.dump(out, open(KOK / "sonuclar/c2_etas_zaman_kiyas.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c2_etas_zaman_kiyas.json", "w", encoding="utf-8") as f:
+    json.dump(out, f, indent=1, ensure_ascii=False)
 for ad, r in out["kume"].items():
     print(f"{ad:22s} ETASz-NPP {r['ETAS_zaman_eksi_NPP']:+.3f}  " + "  ".join(
         f"{k}:{r[f'{k}-ETAS_zaman']['ort']:+.3f}[{r[f'{k}-ETAS_zaman']['GA'][0]:+.3f},{r[f'{k}-ETAS_zaman']['GA'][1]:+.3f}]" for k in kos))

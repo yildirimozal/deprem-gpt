@@ -127,8 +127,8 @@ for i in range(N_KAT):
 np.savez(KOK / "veri/sentetik.npz", t_gun=np.concatenate(tl), m_goreli=np.concatenate(ml),
          seg_bas=np.array(sb), seg_son=np.array(ss), seg_ad=np.array(["Sentetik"] * N_KAT))
 olay = np.array([b["olay"] for b in bilgi])
-json.dump({"n_katalog": N_KAT, "toplam_olay": int(n), "olay_medyan": float(np.median(olay)), "olay_max": int(olay.max()),
-           "eksik_kayitli_katalog": int(sum(b["eksik"] for b in bilgi)),
-           "M_max_4_ustu_katalog": int(sum(b["M_max"] >= 4.0 for b in bilgi)), "kataloglar": bilgi},
-          open(KOK / "sonuclar/sentetik_ozeti.json", "w"), indent=1)
+with open(KOK / "sonuclar/sentetik_ozeti.json", "w", encoding="utf-8") as f:
+    json.dump({"n_katalog": N_KAT, "toplam_olay": int(n), "olay_medyan": float(np.median(olay)), "olay_max": int(olay.max()),
+               "eksik_kayitli_katalog": int(sum(b["eksik"] for b in bilgi)),
+               "M_max_4_ustu_katalog": int(sum(b["M_max"] >= 4.0 for b in bilgi)), "kataloglar": bilgi}, f, indent=1)
 print("toplam", n, "medyan", np.median(olay))

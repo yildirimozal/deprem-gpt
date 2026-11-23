@@ -31,12 +31,12 @@ KIRMIZI = "#e0342b"
 
 TESTLER = {
     "TR": dict(ad="Kahramanmaraş 2023", npz="turkiye.npz", cok="c3_T1", tek="c3_T0", sifir="c3_T2",
-               etas=json.load(open(KOK / "sonuclar/c6_ozet.json"))["en_guclu_gecerli_tum"], kahin="etas4_E4", ana="M7.8"),
+               etas=json.loads((KOK / "sonuclar/c6_ozet.json").read_text(encoding="utf-8"))["en_guclu_gecerli_tum"], kahin="etas4_E4", ana="M7.8"),
     "JP": dict(ad="Noto 2024", npz="japonya.npz", cok="c7_J1", tek="c7_J0", sifir="c7_J2",
-               etas=json.load(open(KOK / "sonuclar/c7_ozet.json"))["en_guclu_gecerli"], kahin="etas7_E4", ana="M7.6"),
+               etas=json.loads((KOK / "sonuclar/c7_ozet.json").read_text(encoding="utf-8"))["en_guclu_gecerli"], kahin="etas7_E4", ana="M7.6"),
 }
 if (KOK / "sonuclar/c11_ozet.json").exists():
-    o11 = json.load(open(KOK / "sonuclar/c11_ozet.json"))
+    o11 = json.loads((KOK / "sonuclar/c11_ozet.json").read_text(encoding="utf-8"))
     TESTLER["TW"] = dict(ad="Hualien 2024", npz="tayvan.npz", cok="c11_H1", tek="c11_H0", sifir="c11_H2",
                          etas=o11["en_guclu_gecerli"], kahin="etas11_E4", ana="M7.2")
 
@@ -134,7 +134,7 @@ for uz in ("png", "pdf"):
 plt.close(fig)
 
 # ---------- Figure 2: mekanizma (Kahramanmaraş) ----------
-c5 = json.load(open(KOK / "sonuclar/c5_ozet.json"))
+c5 = json.loads((KOK / "sonuclar/c5_ozet.json").read_text(encoding="utf-8"))
 v = np.load(KOK / "veri/turkiye.npz")
 test = np.where(v["bolum"] == 3)[0]
 saat = (v["t_gun"][test] - v["t_gun"][int(v["ana_sok_idx"])]) * 24
@@ -186,7 +186,7 @@ say["mekanizma_TR"] = {"ilk48_gozlenen": int(((saat > 0) & (saat <= 48)).sum()),
                        "ilk48_T0": float(H["T0"][mk].sum()), "ilk48_T1": float(H["T1"][mk].sum()), "aralik": A}
 
 # ---------- Figure 3: olasılık tahminleri ----------
-c9 = json.load(open(KOK / "sonuclar/c9_ozet.json"))
+c9 = json.loads((KOK / "sonuclar/c9_ozet.json").read_text(encoding="utf-8"))
 fig = plt.figure(figsize=(10, 6.2))
 gsx = fig.add_gridspec(2, 4, height_ratios=[1, 1.05])
 for j, (te, ad) in enumerate([(te, ad) for te in ("TR", "JP") for ad in ("M4", "M5")]):
@@ -224,6 +224,7 @@ for uz in ("png", "pdf"):
 plt.close(fig)
 say["olasilik"] = {"skor": c9["skor"], "fark": c9["fark"], "karar": c9["karar"],
                    "kapsama": {te: {"model": r["model_kapsama"], "etas": r["etas_kapsama"]} for te, r in c9["ana_sok_sonrasi"].items()}}
-json.dump(say, open(KOK / "makale/sayilar.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "makale/sayilar.json", "w", encoding="utf-8") as f:
+    json.dump(say, f, indent=1, ensure_ascii=False)
 np.savez_compressed(KOK / "makale/sekil_verisi.npz", **SV)
 print(json.dumps({k: {q: w for q, w in v_.items() if not isinstance(w, list)} for k, v_ in say.items() if k in TESTLER}, indent=1, ensure_ascii=False))

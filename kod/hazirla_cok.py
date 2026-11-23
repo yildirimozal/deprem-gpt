@@ -130,8 +130,8 @@ np.savez(V / ("ek_kataloglar_kati.npz" if KATI else "ek_kataloglar.npz"),
          t_gun=np.concatenate(tum_t), m_goreli=np.concatenate(tum_m), kat=np.concatenate(tum_k),
          seg_bas=np.array(seg_bas), seg_son=np.array(seg_son), seg_ad=np.array(seg_ad))
 ozet["toplam_olay"] = int(n)
-json.dump(ozet, open(KOK / ("sonuclar/ek_veri_ozeti_kati.json" if KATI else "sonuclar/ek_veri_ozeti.json"), "w"),
-          indent=1, ensure_ascii=False)
+with open(KOK / ("sonuclar/ek_veri_ozeti_kati.json" if KATI else "sonuclar/ek_veri_ozeti.json"), "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 print(json.dumps({a: {k: v for k, v in b.items() if k != "yillik_mc_maxc"} for a, b in ozet["katalog"].items()},
                  indent=1, ensure_ascii=False))
 for a, b in ozet["katalog"].items():

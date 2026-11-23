@@ -267,6 +267,7 @@ kayit.update({"en_iyi_adim": en_iyi_adim, "en_iyi_dogrulama_tll": en_iyi,
               "test_tll": float(tt.mean()), "test_mll": float(tm.mean()), "test_n": int(len(tt)),
               "sure_s": time.time() - bas_zaman})
 np.savez(cikti / "test.npz", idx=test_idx, tll=tt, mll=tm)
-json.dump(kayit, open(cikti / "kayit.json", "w"), indent=1)
+with open(cikti / "kayit.json", "w", encoding="utf-8") as f:
+    json.dump(kayit, f, indent=1)
 print(f"TEST TLL {tt.mean():.4f}  MLL {tm.mean():.4f}  (en iyi adım {en_iyi_adim})", flush=True)
 print("IS_BITTI", flush=True)

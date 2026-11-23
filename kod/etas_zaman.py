@@ -165,8 +165,9 @@ dallanma = en["K"] * float(np.mean(np.exp(en["a"] * m_uy))) * en["c"] ** (1 - en
 cikti = KOK / "sonuclar" / arg.ad
 cikti.mkdir(parents=True, exist_ok=True)
 np.savez(cikti / "etas_test.npz", idx=test_idx, tll=tt)
-json.dump({"arg": vars(arg), "n_uydurma": int(len(uydur_idx)), "n_test": int(len(test_idx)), "denemeler": sonuc,
-           "secilen": en, "dallanma_orani_yaklasik": dallanma, "test_tll": float(tt.mean()), "sure_s": time.time() - bas},
-          open(cikti / "etas.json", "w"), indent=1)
+with open(cikti / "etas.json", "w", encoding="utf-8") as f:
+    json.dump({"arg": vars(arg), "n_uydurma": int(len(uydur_idx)), "n_test": int(len(test_idx)), "denemeler": sonuc,
+               "secilen": en, "dallanma_orani_yaklasik": dallanma, "test_tll": float(tt.mean()), "sure_s": time.time() - bas},
+              f, indent=1)
 print(f"TEST TLL {tt.mean():.4f}  n={len(tt)}  dallanma~{dallanma:.3f}", flush=True)
 print("IS_BITTI", flush=True)

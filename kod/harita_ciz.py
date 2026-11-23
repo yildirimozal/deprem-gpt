@@ -72,5 +72,6 @@ for i, (te, c) in enumerate(AYAR.items()):
 for uz in ("png", "pdf"):
     fig.savefig(KOK / f"sekiller/c10_sekil1_harita.{uz}", bbox_inches="tight")
 plt.close(fig)
-json.dump(ozet, open(KOK / "sonuclar/c10_harita_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c10_harita_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 print(json.dumps(ozet, indent=1, ensure_ascii=False))

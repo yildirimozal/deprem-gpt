@@ -132,5 +132,6 @@ np.savez(V / "ek_jp.npz", t_gun=np.concatenate(tl), m_goreli=np.concatenate(ml),
          seg_bas=np.array(sb), seg_son=np.array(ss), seg_ad=np.array(sa))
 ozet["ek_jp"] = {a: int(s2 - s1) for a, s1, s2 in zip(sa, sb, ss)}
 ozet["ek_jp_toplam"] = int(n)
-json.dump(ozet, open(KOK / "sonuclar/jp_veri_ozeti.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/jp_veri_ozeti.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 print(json.dumps(ozet, indent=1, ensure_ascii=False))

@@ -29,7 +29,7 @@ rng = np.random.default_rng(9)
 v = np.load(KOK / "veri" / AYAR[0])
 t, mg, bolum = v["t_gun"], v["buyukluk"] - float(v["mc"]), v["bolum"]
 beta = 1.0 / ((mg[bolum == 1]).mean() + 0.05)
-s = json.load(open(KOK / f"sonuclar/{AYAR[1]}/etas.json"))["secilen"]
+s = json.loads((KOK / f"sonuclar/{AYAR[1]}/etas.json").read_text(encoding="utf-8"))["secilen"]
 a, c, p, K = s["a"], s["c"], s["p"], s["K"]
 tau = s.get("tau")
 mu = s["mu"][0] if isinstance(s["mu"], list) else s["mu"]
@@ -115,7 +115,7 @@ cikti.mkdir(parents=True, exist_ok=True)
 np.savez(cikti / "senaryo.npz", yayin_t=yayin, tur=tur, maxm=np.stack([r[0] for r in sonuc]),
          say4=np.stack([r[1] for r in sonuc]), say5=np.stack([r[2] for r in sonuc]),
          olay=np.stack([r[3] for r in sonuc]), tasma=np.stack([r[4] for r in sonuc]))
-json.dump({"ayar": AYAR, "N": N, "beta": beta, "b": beta / np.log(10), "a": a, "c": c, "p": p, "K": K, "tau": tau, "mu": mu,
-           "sure_s": time.time() - bas, "tasan_senaryo": int(sum(r[4].sum() for r in sonuc))},
-          open(cikti / "bilgi.json", "w"), indent=1)
+with open(cikti / "bilgi.json", "w", encoding="utf-8") as f:
+    json.dump({"ayar": AYAR, "N": N, "beta": beta, "b": beta / np.log(10), "a": a, "c": c, "p": p, "K": K, "tau": tau, "mu": mu,
+               "sure_s": time.time() - bas, "tasan_senaryo": int(sum(r[4].sum() for r in sonuc))}, f, indent=1)
 print(TE, len(yayin), "yayın", f"{time.time() - bas:.0f}s", "taşan", int(sum(r[4].sum() for r in sonuc)))

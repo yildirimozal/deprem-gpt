@@ -95,7 +95,8 @@ for k, s_ in ozet["skor"].items():
     r = s_["model_ort_olasilik"] / max(s_["gozlenen_oran"], 1e-9)
     kalibre[k] = {"oran": r, "kalibre_degil": bool(r < 0.5 or r > 2)}
 ozet["karar"] = {"karar": karar, "GA_sifir_ustu_hedef": iyi, "GA_sifir_alti_hedef": kotu_tam, "model_yil_ortalamasi_kalibrasyon": kalibre}
-json.dump(ozet, open(KOK / "sonuclar/c9_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c9_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 def ga(x):
@@ -126,7 +127,7 @@ sat += ["%5–95 aralığının gözlenen sayıyı kapsama oranı (ana şok sonr
 sat += [f"Taşan model senaryosu (adım sınırına ulaşan): " + ", ".join(f"{te}: {ozet['kalibrasyon'][f'{te}|tasan_model_senaryo']}" for te in TEST),
         "", f"**Karar (ön kayıtlı kural): {karar}** (GA'sı sıfırın üstünde hedef: {iyi}/4, tamamen altında: {kotu_tam}/4)",
         "Yıl ortalamasında model öngörülen/gözlenen oranı: " + ", ".join(f"{k} {x['oran']:.2f}" + (" (KALİBRE DEĞİL)" if x["kalibre_degil"] else "") for k, x in kalibre.items())]
-open(KOK / "sonuclar/c9_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c9_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
 
 # ---------- şekiller ----------

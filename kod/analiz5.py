@@ -82,7 +82,8 @@ for (a, c), et in zip(ARALIK, ETIKET):
     for x in mll:
         r[f"{x}-GR_mll"] = float((mll[x] - gr)[mk].mean())
     ozet["aralik"].append(r)
-json.dump(ozet, open(KOK / "sonuclar/c5_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c5_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 A = ozet["aralik"]
 sat = [f"Gutenberg-Richter b (Türkiye eğitim): {ozet['b_degeri_egitim']:.3f}. M7.6 ana şoktan {SAAT_M76:.2f} saat sonra.", "",
@@ -98,7 +99,7 @@ sat += [f"| {r['aralik']} | {r['T1-E2_log_lam']:+.3f} | {r['T1-E2_eksi_Lambda']:
 sat += ["", "Büyüklük log-olabilirliği, sabit Gutenberg-Richter'e göre (nat/olay):", "",
         "| Aralık | GR | T0 − GR | T1 − GR | T2 − GR |", "|---|---:|---:|---:|---:|"]
 sat += [f"| {r['aralik']} | {r['GR_mll']:.3f} | {r['T0-GR_mll']:+.3f} | {r['T1-GR_mll']:+.3f} | {r['T2-GR_mll']:+.3f} |" for r in A]
-open(KOK / "sonuclar/c5_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c5_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
 
 # ---------- şekil ----------

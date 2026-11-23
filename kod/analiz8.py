@@ -34,7 +34,7 @@ for te, c in TEST.items():
             d = KOK / f"sonuclar/c8_{te}_{var}_t{sd}"
             z = np.load(d / "test.npz")
             assert np.array_equal(z["idx"], test)
-            k = json.load(open(d / "kayit.json"))
+            k = json.loads((d / "kayit.json").read_text(encoding="utf-8"))
             kos[(var, sd)] = z["tll"]
             ozet["kosu"][f"{te}_{var}_t{sd}"] = {"test_tll": float(z["tll"].mean()), "dogrulama_tll": k["en_iyi_dogrulama_tll"],
                                                  "en_iyi_adim": k["en_iyi_adim"], "n_param": k["n_param"]}
@@ -71,7 +71,8 @@ for var in VAR[1:]:
     else:
         k = "BELIRSIZ"
     ozet["karar"][var] = k
-json.dump(ozet, open(KOK / "sonuclar/c8_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c8_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 def ga(x):
@@ -98,7 +99,7 @@ for te in TEST:
         sat.append(f"- {te} {var}: " + "; ".join(
             f"{ozet['kosu'][f'{te}_{var}_t{sd}']['test_tll']:.4f} / {ozet['kosu'][f'{te}_{var}_t{sd}']['dogrulama_tll']:.4f} / {ozet['kosu'][f'{te}_{var}_t{sd}']['en_iyi_adim']}" for sd in (1, 2, 3)))
 sat += ["", "**Karar (ön kayıtlı kural):** " + ", ".join(f"{v} {ACIK[v]}: {k}" for v, k in ozet["karar"].items())]
-open(KOK / "sonuclar/c8_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c8_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
 
 plt.rcParams.update({

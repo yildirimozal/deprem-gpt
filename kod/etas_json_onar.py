@@ -11,12 +11,12 @@ import numpy as np
 
 KOK = Path(__file__).resolve().parent.parent
 log, ad = sys.argv[1], sys.argv[2]
-satir = [json.loads(x[x.index("{"):x.rindex("}") + 1]) for x in open(KOK / log, encoding="utf-8", errors="replace")
-         if x.startswith('{"baslangic"')]
+with open(KOK / log, encoding="utf-8", errors="replace") as f:
+    satir = [json.loads(x[x.index("{"):x.rindex("}") + 1]) for x in f if x.startswith('{"baslangic"')]
 assert len(satir) == 3, len(satir)
 en = max(satir, key=lambda r: r["uydurma_tll"])
 tt = np.load(KOK / "sonuclar" / ad / "etas_test.npz")["tll"]
-json.dump({"not": f"{log} günlüğünden yeniden kuruldu (özgün yazım int64 hatasıyla çöktü)", "denemeler": satir,
-           "secilen": en, "test_tll": float(tt.mean()), "n_test": int(len(tt))},
-          open(KOK / "sonuclar" / ad / "etas.json", "w"), indent=1)
+with open(KOK / "sonuclar" / ad / "etas.json", "w", encoding="utf-8") as f:
+    json.dump({"not": f"{log} günlüğünden yeniden kuruldu (özgün yazım int64 hatasıyla çöktü)", "denemeler": satir,
+               "secilen": en, "test_tll": float(tt.mean()), "n_test": int(len(tt))}, f, indent=1)
 print(ad, "test", round(float(tt.mean()), 4), "dallanma", round(en["dallanma"], 3), "uydurma", [round(r["uydurma_tll"], 6) for r in satir])

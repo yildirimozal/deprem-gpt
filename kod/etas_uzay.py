@@ -35,7 +35,7 @@ la, lo = v["enlem"], v["boylam"]
 la0, lo0 = np.median(la), np.median(lo)
 x = (lo - lo0) * np.cos(np.radians(la0)) * 111.2
 y = (la - la0) * 111.2
-s = json.load(open(KOK / f"sonuclar/{arg.zaman}/etas.json"))["secilen"]
+s = json.loads((KOK / f"sonuclar/{arg.zaman}/etas.json").read_text(encoding="utf-8"))["secilen"]
 a, c, p, K = s["a"], s["c"], s["p"], s["K"]
 tau = s.get("tau")
 mu = s["mu"][0] if isinstance(s["mu"], list) else s["mu"]
@@ -143,8 +143,9 @@ with torch.no_grad():
 cikti = KOK / "sonuclar" / arg.ad
 cikti.mkdir(parents=True, exist_ok=True)
 np.savez(cikti / "etas_uzay_test.npz", idx=test_idx, sll=s_t.cpu().numpy(), sll_arka_plan=a_t.cpu().numpy())
-json.dump({"arg": vars(arg), "zaman_param": {"a": a, "c": c, "p": p, "K": K, "tau": tau, "mu": mu}, "merkez": [float(la0), float(lo0)],
-           "denemeler": sonuclar, "secilen": en, "test_sll_km2": float(s_t.mean()), "test_sll_arka_plan_km2": float(a_t.mean()),
-           "sure_s": time.time() - bas}, open(cikti / "etas_uzay.json", "w"), indent=1)
+with open(cikti / "etas_uzay.json", "w", encoding="utf-8") as f:
+    json.dump({"arg": vars(arg), "zaman_param": {"a": a, "c": c, "p": p, "K": K, "tau": tau, "mu": mu}, "merkez": [float(la0), float(lo0)],
+               "denemeler": sonuclar, "secilen": en, "test_sll_km2": float(s_t.mean()), "test_sll_arka_plan_km2": float(a_t.mean()),
+               "sure_s": time.time() - bas}, f, indent=1)
 print(f"TEST SLL (km²) {float(s_t.mean()):.4f}  arka plan {float(a_t.mean()):.4f}", flush=True)
 print("IS_BITTI", flush=True)

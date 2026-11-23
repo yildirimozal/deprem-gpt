@@ -34,12 +34,12 @@ for k in ETAS_TUM:
         z = np.load(d / "etas_test.npz")
         assert np.array_equal(z["idx"], test)
         etas[k] = z["tll"]
-        bilgi[k] = json.load(open(d / "etas.json"))
+        bilgi[k] = json.loads((d / "etas.json").read_text(encoding="utf-8"))
 EKSIK = [k for k in ETAS_TUM if k not in etas]
 GECERLI = [k for k in GECERLI_ADAY if k in etas]
 print("eksik ETAS:", EKSIK)
 mod = {k: [np.load(KOK / f"sonuclar/c7_{k}_t{s}/test.npz")["tll"] for s in (1, 2, 3)] for k in KOD}
-kayit = {k: [json.load(open(KOK / f"sonuclar/c7_{k}_t{s}/kayit.json")) for s in (1, 2, 3)] for k in KOD}
+kayit = {k: [json.loads((KOK / f"sonuclar/c7_{k}_t{s}/kayit.json").read_text(encoding="utf-8")) for s in (1, 2, 3)] for k in KOD}
 
 
 def boot(f, mk, bg):
@@ -89,7 +89,8 @@ else:
     karar = "KISMEN"
 ozet["karar"] = {"karar": karar, "en_guclu": en_guclu, "eksik_varyantlar": EKSIK, "J1-en_guclu_yil": r_yil,
                  "J1-en_guclu_ilk_gun": r_gun, "J1-J0_yil": r_10}
-json.dump(ozet, open(KOK / "sonuclar/c7_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c7_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 def ga(x):
@@ -124,7 +125,7 @@ sat += ["", "Tohumlar (tüm test): " + "; ".join(f"{k}: " + ", ".join(f"{x:.4f}"
         f"J1 − {en_guclu} tohumlar (tüm test): " + ", ".join(f"{x:+.3f}" for x in r_yil["tohum"]),
         f"J1 − {en_guclu} tohumlar (Noto ilk gün): " + ", ".join(f"{x:+.3f}" for x in r_gun["tohum"]), "",
         f"**Karar (ön kayıtlı kural): {karar}**"]
-open(KOK / "sonuclar/c7_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c7_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
 
 # ---------- şekiller ----------

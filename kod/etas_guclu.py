@@ -238,8 +238,9 @@ tt = (torch.log(mu0 + en["K"] * S) - mu0 * D - en["K"] * I).cpu().numpy()
 cikti = KOK / "sonuclar" / arg.ad
 cikti.mkdir(parents=True, exist_ok=True)
 np.savez(cikti / "etas_test.npz", idx=test_idx, tll=tt)
-json.dump({"arg": vars(arg), "mc": mc, "segment": [[int(x) for x in sg] for sg in segler], "n_uydurma": int(sum(len(x) for x in uy_l)),
-           "n_test": int(len(test_idx)), "denemeler": sonuc, "secilen": en, "test_tll": float(tt.mean()),
-           "sure_s": time.time() - bas}, open(cikti / "etas.json", "w"), indent=1)
+with open(cikti / "etas.json", "w", encoding="utf-8") as f:
+    json.dump({"arg": vars(arg), "mc": mc, "segment": [[int(x) for x in sg] for sg in segler], "n_uydurma": int(sum(len(x) for x in uy_l)),
+               "n_test": int(len(test_idx)), "denemeler": sonuc, "secilen": en, "test_tll": float(tt.mean()),
+               "sure_s": time.time() - bas}, f, indent=1)
 print(f"TEST TLL {tt.mean():.4f}  n={len(tt)}  dallanma={en['dallanma']:.3f}", flush=True)
 print("IS_BITTI", flush=True)

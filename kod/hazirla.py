@@ -67,5 +67,6 @@ ozet = {
     "etas_tll_yogun": {k: float(etas_tll[v].mean()) for k, v in maskeler.items()},
 }
 (KOK / "sonuclar").mkdir(exist_ok=True)
-json.dump(ozet, open(KOK / "sonuclar/veri_ozeti.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/veri_ozeti.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 print(json.dumps(ozet, indent=1, ensure_ascii=False))

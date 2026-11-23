@@ -40,7 +40,7 @@ for k in KOD:
             continue
         z = np.load(d / "test.npz")
         assert np.array_equal(z["idx"], test)
-        kos[(k, s)] = dict(tll=z["tll"], mll=z["mll"], kayit=json.load(open(d / "kayit.json")))
+        kos[(k, s)] = dict(tll=z["tll"], mll=z["mll"], kayit=json.loads((d / "kayit.json").read_text(encoding="utf-8")))
 print("eksik:", eksik)
 tam = [k for k in KOD if all((k, s) in kos for s in TOHUM)]
 rng = np.random.default_rng(0)
@@ -95,7 +95,8 @@ if {"T0", "T1"} <= set(tam):
     karar = "DEVAM" if devam else ("DUR" if dur else "BELIRSIZ")
     ozet["karar"] = {"karar": karar, "T1-ETAS": k1["eksi_ETAS"], "T1-ETAS_GA": k1["eksi_ETAS_GA"],
                      "T1-ETAS_dizi_30g": k30["eksi_ETAS"], "T1-T0": d10}
-json.dump(ozet, open(KOK / "sonuclar/c3_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c3_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 def ga(x):
@@ -123,7 +124,7 @@ sat += ["", "| Koşu | Büyüklük LL (tüm test) |", "|---|---:|"]
 for k in tam:
     sat.append(f"| {k} | {ozet['kume']['tum_test'][k]['mll']:.4f} |")
 sat += ["", f"**Karar (ön kayıtlı kural): {karar}**"]
-open(KOK / "sonuclar/c3_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c3_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
 
 # ---------- şekiller ----------

@@ -35,7 +35,7 @@ for k in ["E0", "E1", "E2", "E5", "E7", "E4"]:
         z = np.load(d / "etas_test.npz")
         assert np.array_equal(z["idx"], test)
         etas[k] = z["tll"]
-        etas_bilgi[k] = json.load(open(d / "etas.json"))["secilen"]
+        etas_bilgi[k] = json.loads((d / "etas.json").read_text(encoding="utf-8"))["secilen"]
 eksik = [k for k in ["E0", "E1", "E2", "E5", "E7", "E4"] if k not in etas]
 gecerli = [k for k in ["E1", "E2", "E5", "E7"] if k in etas]
 en = max(gecerli, key=lambda k: etas[k].mean())
@@ -95,11 +95,12 @@ if "HS2" in mod_s and uz_p.exists():
         ozet["fark"][f"HS2_TOPLAM-uzayETAS|{ad}"] = {"ort": float(top[mk].mean()), "GA": boot(top, mk, bg)}
     ozet["uzay"] = {"HS2_sll": {a: float(S[mk].mean()) for a, (mk, _) in KUME.items()},
                     "etas_sll": {a: float(U[mk].mean()) for a, (mk, _) in KUME.items()},
-                    "etas_uzay_param": json.load(open(KOK / "sonuclar/etas11_uzay/etas_uzay.json"))["secilen"]}
+                    "etas_uzay_param": json.loads((KOK / "sonuclar/etas11_uzay/etas_uzay.json").read_text(encoding="utf-8"))["secilen"]}
     q = ozet["fark"]["HS2_TOPLAM-uzayETAS|ilk_gun"]
     k2 = "TEKRARLANDI" if q["ort"] > 0 and q["GA"][0] > 0 else "TEKRARLANMADI"
 ozet["karar"] = {"birincil": karar, "ikincil_sentetik": k1, "ikincil_konum": k2}
-json.dump(ozet, open(KOK / "sonuclar/c11_ozet.json", "w"), indent=1, ensure_ascii=False)
+with open(KOK / "sonuclar/c11_ozet.json", "w", encoding="utf-8") as f:
+    json.dump(ozet, f, indent=1, ensure_ascii=False)
 
 
 def ga(x):
@@ -119,5 +120,5 @@ for an in sorted({k.split("|")[0] for k in ozet["fark"]}):
     sat.append(f"| {an} | " + " | ".join(f"{ozet['fark'][f'{an}|{a}']['ort']:+.3f} {ga(ozet['fark'][f'{an}|{a}']['GA'])}" for a in KUME)
                + " | " + ", ".join(f"{x:+.3f}" for x in ozet["fark"][f"{an}|tum"].get("tohum", [])) + " |")
 sat += ["", f"**Karar (ön kayıtlı):** birincil {karar}; sentetik ön eğitim {k1}; konum {k2}"]
-open(KOK / "sonuclar/c11_tablolar.md", "w").write("\n".join(sat) + "\n")
+(KOK / "sonuclar/c11_tablolar.md").write_text("\n".join(sat) + "\n", encoding="utf-8")
 print("\n".join(sat))
