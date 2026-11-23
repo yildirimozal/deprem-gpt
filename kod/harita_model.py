@@ -22,8 +22,9 @@ ap0.add_argument("--kosu", required=True)
 ap0.add_argument("--ad", required=True)
 ap0.add_argument("--S", type=int, default=300)
 ap0.add_argument("--saat", type=float, default=12.0)
+ap0.add_argument("--cihaz", default="auto", choices=["auto", "cuda", "mps", "cpu"])
 a0 = ap0.parse_args()
-sys.argv = ["egit3.py", "--L", "512", "--ad", "c10_gecici", "--ana", a0.ana, "--ek", a0.ek, "--uzay_isaretci"]
+sys.argv = ["egit3.py", "--L", "512", "--ad", "c10_gecici", "--ana", a0.ana, "--ek", a0.ek, "--uzay_isaretci", "--cihaz", a0.cihaz]
 kaynak = (KOK / "kod/egit3.py").read_text(encoding="utf-8").split("# ---------------- eğitim ----------------")[0]
 exec(kaynak)                                                                    # noqa: S102
 
@@ -43,7 +44,7 @@ def senaryo(t0, ufuk=1.0, adim_siniri=3000):
     y_min = float(np.log(max(t0 - t_ca[i_son], 1e-9)))
     kayit = []
     for adim in range(adim_siniri):
-        with torch.autocast("cuda", dtype=torch.bfloat16):
+        with amp_baglami(cihaz):
             h_tum = model(X, C, T, Kk)
         h_tum = h_tum.float()
         h = h_tum[:, -1]

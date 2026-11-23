@@ -28,7 +28,7 @@ def ayristir(m):
     for i in range(0, len(hedef), 256):
         k = hedef[i:i + 256]
         idx = k[:, None] + ofs[None]
-        with torch.autocast("cuda", dtype=torch.bfloat16):
+        with amp_baglami(cihaz):
             h = m(X_g[idx], C_g[idx], T_g[idx])[:, -1]
         h = h.float()
         w, mu, ls = m.zaman(h).split(m.K, -1)

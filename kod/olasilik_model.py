@@ -24,9 +24,10 @@ ap0.add_argument("--ad", required=True)
 ap0.add_argument("--S", type=int, default=400)
 ap0.add_argument("--ufuk", type=float, default=1.0)
 ap0.add_argument("--adim_siniri", type=int, default=4000)
+ap0.add_argument("--cihaz", default="auto", choices=["auto", "cuda", "mps", "cpu"])
 a0 = ap0.parse_args()
 
-sys.argv = ["egit.py", "--L", "512", "--ad", "c9_gecici", "--ana", a0.ana]
+sys.argv = ["egit.py", "--L", "512", "--ad", "c9_gecici", "--ana", a0.ana, "--cihaz", a0.cihaz]
 kaynak = (KOK / "kod/egit.py").read_text(encoding="utf-8").split("# ---------------- eğitim ----------------")[0]
 exec(kaynak)                                                                    # noqa: S102
 
@@ -58,7 +59,7 @@ def senaryo(t0):
     olay = torch.zeros(S, dtype=torch.long, device=cihaz)
     y_min = float(np.log(max(t0 - t_ca[i_son], 1e-9)))
     for adim in range(a0.adim_siniri):
-        with torch.autocast("cuda", dtype=torch.bfloat16):
+        with amp_baglami(cihaz):
             h = model(X, C, T)[:, -1]
         h = h.float()
         w, mu, ls = model.zaman(h).split(model.K, -1)

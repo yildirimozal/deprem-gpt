@@ -24,8 +24,18 @@ ap.add_argument("--zaman", required=True)
 ap.add_argument("--ad", required=True)
 ap.add_argument("--n_uydur", type=int, default=5000)
 ap.add_argument("--nm_adim", type=int, default=300)
+ap.add_argument("--cihaz", default="auto", choices=["auto", "cuda", "mps", "cpu"])
 arg = ap.parse_args()
-cihaz = torch.device("cuda")
+
+if arg.cihaz == "auto":
+    if torch.cuda.is_available():
+        cihaz = torch.device("cuda")
+    elif getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        cihaz = torch.device("mps")
+    else:
+        cihaz = torch.device("cpu")
+else:
+    cihaz = torch.device(arg.cihaz)
 
 v = np.load(KOK / "veri" / arg.ana)
 t = v["t_gun"].astype(np.float64)
@@ -137,7 +147,8 @@ with torch.no_grad():
         print(json.dumps(sonuclar[-1]), f"{time.time() - bas:.0f}s", flush=True)
     en = max(sonuclar, key=lambda r: r["uydurma_sll"])
     del veri_u
-    torch.cuda.empty_cache()
+    if cihaz.type == "cuda":
+        torch.cuda.empty_cache()
     veri_t = hazirla(test_idx)
     s_t, a_t = sll(en["theta"], veri_t, ayri=True)
 cikti = KOK / "sonuclar" / arg.ad

@@ -7,6 +7,7 @@ Kullanım:
 Çıktı (sonuclar/<ad>/): kayit.json, test.npz (olay başına zamansal ve büyüklük LL), en_iyi.pt
 """
 import argparse
+import contextlib
 import json
 import math
 import time
@@ -42,12 +43,29 @@ ap.add_argument("--sabit_adim", type=int, default=0, help=">0 ise erken durdurma
 ap.add_argument("--deger_jeton", type=int, default=262144)
 ap.add_argument("--ek", default="", help="veri/ altında ek katalog npz")
 ap.add_argument("--ana", default="olaylar.npz", help="veri/ altında ana katalog (doğrulama ve test buradan)")
+ap.add_argument("--cihaz", default="auto", choices=["auto", "cuda", "mps", "cpu"], help="çalışma cihazı")
 arg = ap.parse_args()
+
+
+def sec_cihaz(istek):
+    if istek == "auto":
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+    return torch.device(istek)
+
+
+def amp_baglami(c):
+    return torch.autocast("cuda", dtype=torch.bfloat16) if c.type == "cuda" else contextlib.nullcontext()
+
 
 torch.manual_seed(arg.tohum)
 np.random.seed(arg.tohum)
-cihaz = torch.device("cuda")
-torch.backends.cuda.matmul.allow_tf32 = True
+cihaz = sec_cihaz(arg.cihaz)
+if cihaz.type == "cuda":
+    torch.backends.cuda.matmul.allow_tf32 = True
 
 # ---------------- veri ----------------
 # California önce gelir; doğrulama/test indeksleri ek katalog eklense de değişmez.
@@ -202,7 +220,7 @@ def degerlendir(hedefler):
     for i in range(0, len(hedefler), bs):
         k = hedefler[i:i + bs]
         idx = k[:, None] + ofs[None]
-        with torch.autocast("cuda", dtype=torch.bfloat16):
+        with amp_baglami(cihaz):
             h = model(X_g[idx], C_g[idx], T_g[idx])[:, -1]
         a, b = model.ll(h, Y_g[k], C_g[k])
         tll.append(a)
@@ -227,7 +245,7 @@ for adim in range(1, son_adim + 1):
     s = basla_g[torch.randint(0, len(basla_g), (B,), device=cihaz)]
     idx = s[:, None] + ofs_e[None]                      # (B, L+1)
     girdi, hedef = idx[:, :-1], idx[:, 1:]
-    with torch.autocast("cuda", dtype=torch.bfloat16):
+    with amp_baglami(cihaz):
         h = model(X_g[girdi], C_g[girdi], T_g[girdi])
     tll, mll = model.ll(h, Y_g[hedef], C_g[hedef])
     maske = H_g[hedef].float()

@@ -13,6 +13,7 @@ Kullanım:
 Çıktı (sonuclar/<ad>/): kayit.json, test.npz (olay başına zamansal ve büyüklük LL), en_iyi.pt
 """
 import argparse
+import contextlib
 import json
 import math
 import time
@@ -52,12 +53,29 @@ ap.add_argument("--katalog_gomme", action="store_true")
 ap.add_argument("--konum", action="store_true")
 ap.add_argument("--on_egitim", default="")
 ap.add_argument("--on_adim", type=int, default=3000)
+ap.add_argument("--cihaz", default="auto", choices=["auto", "cuda", "mps", "cpu"], help="çalışma cihazı")
 arg = ap.parse_args()
+
+
+def sec_cihaz(istek):
+    if istek == "auto":
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+            return torch.device("mps")
+        return torch.device("cpu")
+    return torch.device(istek)
+
+
+def amp_baglami(c):
+    return torch.autocast("cuda", dtype=torch.bfloat16) if c.type == "cuda" else contextlib.nullcontext()
+
 
 torch.manual_seed(arg.tohum)
 np.random.seed(arg.tohum)
-cihaz = torch.device("cuda")
-torch.backends.cuda.matmul.allow_tf32 = True
+cihaz = sec_cihaz(arg.cihaz)
+if cihaz.type == "cuda":
+    torch.backends.cuda.matmul.allow_tf32 = True
 
 # ---------------- veri ----------------
 # California önce gelir; doğrulama/test indeksleri ek katalog eklense de değişmez.
@@ -65,7 +83,7 @@ v = np.load(KOK / "veri" / arg.ana)
 MC_ANA = float(v["mc"]) if "mc" in v.files else 2.5
 t_ca = v["t_gun"].astype(np.float64)
 bolum_ca = v["bolum"]
-ANA_AD = {"turkiye.npz": "Turkiye_KOERI", "japonya.npz": "Japonya_JMA", "olaylar.npz": "California_ComCat", "tayvan.npz": "Tayvan_TAP"}[arg.ana]
+ANA_AD = {"turkiye.npz": "Turkiye_KOERI", "japonya.npz": "Japonya_JMA", "olaylar.npz": "California_ComCat", "tayvan.npz": "Tayvan_TAP"}.get(arg.ana, Path(arg.ana).stem)
 KAT_NO = {"Turkiye_KOERI": 0, "Japonya_JMA": 1, "California_ComCat": 2, "Italya_INGV": 3, "YeniZelanda_GeoNet": 4, "Sentetik": 5, "Tayvan_TAP": 6}
 seg = [(0, len(t_ca))]
 seg_ad = [ANA_AD]
@@ -96,7 +114,7 @@ dt = np.concatenate([np.diff(x, prepend=x[0] - 1.0) for x in t_l])   # her katal
 dt = np.maximum(dt, DT_MIN)
 ozellik = np.stack([(np.log10(dt) + 1.0) / 1.5, mg], 1).astype(np.float32)
 tum_seg = seg + SENTETIK
-kat_id = np.concatenate([np.full(b - a, KAT_NO[ad], np.int64) for (a, b), ad in zip(tum_seg, seg_ad)])
+kat_id = np.concatenate([np.full(b - a, KAT_NO.get(ad, 0), np.int64) for (a, b), ad in zip(tum_seg, seg_ad)])
 if arg.konum:
     kn = np.load(KOK / "veri/konum.npz")
     konum = np.zeros((len(t), 4), np.float32)
@@ -249,7 +267,7 @@ def degerlendir(hedefler):
     for i in range(0, len(hedefler), bs):
         k = hedefler[i:i + bs]
         idx = k[:, None] + ofs[None]
-        with torch.autocast("cuda", dtype=torch.bfloat16):
+        with amp_baglami(cihaz):
             h = model(X_g[idx], C_g[idx], T_g[idx], K_g[idx])[:, -1]
         a, b = model.ll(h, Y_g[k], C_g[k])
         tll.append(a)
@@ -285,7 +303,7 @@ if SENTETIK:
         s = on_g[torch.randint(0, len(on_g), (B,), device=cihaz)]
         idx = s[:, None] + ofs_e[None]
         girdi, hedef = idx[:, :-1], idx[:, 1:]
-        with torch.autocast("cuda", dtype=torch.bfloat16):
+        with amp_baglami(cihaz):
             h = model(X_g[girdi], C_g[girdi], T_g[girdi], K_g[girdi])
         tll, mll = model.ll(h, Y_g[hedef], C_g[hedef])
         kayip = -(tll + mll).mean()
@@ -306,7 +324,7 @@ for adim in range(1, son_adim + 1):
     s = basla_g[torch.randint(0, len(basla_g), (B,), device=cihaz)]
     idx = s[:, None] + ofs_e[None]                      # (B, L+1)
     girdi, hedef = idx[:, :-1], idx[:, 1:]
-    with torch.autocast("cuda", dtype=torch.bfloat16):
+    with amp_baglami(cihaz):
         h = model(X_g[girdi], C_g[girdi], T_g[girdi], K_g[girdi])
     tll, mll = model.ll(h, Y_g[hedef], C_g[hedef])
     maske = H_g[hedef].float()
